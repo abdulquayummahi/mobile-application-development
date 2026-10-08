@@ -8,11 +8,19 @@ export default function App() {
             <StatusBar style="dark" />
 
             <ProfileCard
-                name="Abduol Quayum"
+                name="Abdul Quayum"
                 studentId="22-12345-1"
                 department="Computer Science — AIUB"
                 bio="Passionate about mobile development and building tools that make everyday life easier."
-                skills={["React Native", "JavaScript", "Node.js", "PostgreSQL", "ASP.NET"]}
+                skills={["C++", "Java", "MySQL", "ASP.NET", "React Native", "JavaScript", "Node.js", "PostgreSQL"]}
+            />
+
+            <ProfileCard
+                name="Md. Musfikuzzaman"
+                studentId="22-12345-2"
+                department="Computer Science - AIUB"
+                bio="Interested in Mobile Development Development and Computer Science related fields."
+                skills={["C++", "React Native", "Node.js", "PostgreSQL", "Software Quality Testing"]}
             />
 
             <ProfileCard

@@ -1,26 +1,22 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-// Define the shape of the props our component expects
 interface ProfileCardProps {
     name: string;
     studentId: string;
     department: string;
     bio: string;
-    skills?: string[]; // Optional array of skills
+    skills?: string[];
 }
 
 export default function ProfileCard({ name, studentId, department, bio, skills = [] }: ProfileCardProps) {
-    // Build initials from the name prop
     const initials = name
         .split(" ")
         .map((word) => word[0])
         .join("");
 
-    // Declare a state variable 'followed', starting as false
     const [followed, setFollowed] = useState(false);
 
-    // Toggle function — flips followed between true and false
     const handleFollow = () => {
         setFollowed(!followed);
     };
