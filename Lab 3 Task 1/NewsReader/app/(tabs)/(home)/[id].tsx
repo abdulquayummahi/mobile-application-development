@@ -23,10 +23,8 @@ export default function ArticleDetail() {
     const navigation = useNavigation();
     const article = ARTICLES.find((a) => a.id === id);
 
-    // 1. Add local state for the bookmark toggle
     const [bookmarked, setBookmarked] = useState<boolean>(false);
 
-    // 2. Set only the header title (ignoring the misleading headerRight hint)
     useEffect(() => {
         if (article) {
             navigation.setOptions({ title: article.title });
@@ -62,7 +60,6 @@ export default function ArticleDetail() {
                 ))}
             </ScrollView>
 
-            {/* 3. Render the floating action button at the bottom right */}
             <TouchableOpacity
                 style={styles.fab}
                 onPress={() => setBookmarked(prev => !prev)}
@@ -91,7 +88,6 @@ const styles = StyleSheet.create({
     body: { fontSize: 15, color: "#334155", lineHeight: 24, marginBottom: 16 },
     notFound: { padding: 40, textAlign: "center", color: "#94A3B8" },
 
-    // NEW: Styles for the Floating Action Button
     fab: {
         position: "absolute",
         bottom: 24,
