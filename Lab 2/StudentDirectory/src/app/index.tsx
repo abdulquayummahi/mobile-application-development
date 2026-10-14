@@ -1,98 +1,91 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { FlatList, StyleSheet, View, Text } from "react-native";
+// Importing our custom StudentItem component to display each student in the list
+import StudentItem from "@/components/student-item";
+// Importing the list of students from our data file
+import { STUDENTS } from "@/data/students";
+// Importing SafeAreaView to ensure content is displayed within the safe area boundaries of a device
+import { SafeAreaView } from "react-native-safe-area-context";
+// NEW: Importing the SearchBar component to allow users to search for students
+import SearchBar from "@/components/search-bar";
+import {useState} from "react";
 
 export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    const [query, setQuery] = useState<string>("");
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+    const filtered = STUDENTS.filter((s) => {
+       return (
+           s.name.toLowerCase().includes(query.toLowerCase()) ||
+               s.department.toLowerCase().includes(query.toLowerCase())
+       );
+    });
+    return (
+        // View is the container that contains the list of students and search bar
+        <SafeAreaView style={styles.container}>
+            <View style={styles.titleBar}>
+                <Text style={styles.title}>Student Directory</Text>
+            </View>
+            {/* // NEW: Search Bar */}
+            {/* // NEW: update the value and onChangeText function in the Search Bar */}
+            <SearchBar value={query} onChangeText={setQuery} />
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
+            <FlatList
+                data={filtered}
+                renderItem={({item}) => <StudentItem student={item} onPress={() => {}} isSelected={false}/>}
+                ListEmptyComponent={
+                    <View style={styles.empty}>
+                        <Text style={styles.emptyText}> No Students match "{query}"</Text>
+                    </View>
+                }
+            />
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: "#F0F4F8",
+    },
+    titleContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
+    stepContainer: {
+        gap: 8,
+        marginBottom: 8,
+    },
+    reactLogo: {
+        height: 178,
+        width: 290,
+        bottom: 0,
+        left: 0,
+        position: "absolute",
+    },
+    // NEW: styles for the title bar
+    titleBar: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        backgroundColor: "#0D1F4E",
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: "#FFFFFF",
+    },
+    count: {
+        fontSize: 12,
+        color: "#CCFBF1",
+    },
+    empty: {
+        padding: 40,
+        alignItems: "center",
+    },
+    emptyText: {
+        fontSize: 14,
+        color: "#94A3B8",
+    },
 });
