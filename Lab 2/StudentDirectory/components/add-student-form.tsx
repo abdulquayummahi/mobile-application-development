@@ -1,17 +1,18 @@
 import {Student} from "../data/students";
 import {useEffect, useState} from "react";
-import {ActivityIndicator, Pressable, ScrollView, StyleSheet, Text} from "react-native";
+import {ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, Alert, View} from "react-native";
 import FormField from "./form-field";
-import * as trace_events from "node:trace_events";
-
+import {SafeAreaView} from "react-native-safe-area-context";
 
 interface AddStudentFormProps {
     onSubmitSuccess: (student: Student) => void;
+    onCancel: () => void;
 }
 
 interface FormData {
     name: string;
     studentId: string;
+    email: string;
     department: string;
     bio: string;
     skillsText: string;
@@ -20,6 +21,7 @@ interface FormData {
 interface FormErrors {
     name?: string;
     studentId?: string;
+    email?: string;
     department?: string;
     bio?: string;
 }
@@ -29,17 +31,22 @@ function validateForm(data: FormData): FormErrors {
 
     if(data.name.trim().length === 0) {
         newErrors.name = "Name is required";
-    }
-    else if(data.name.trim().length < 3) {
+    } else if(data.name.trim().length < 3) {
         newErrors.name = "Name must be at least 3 characters";
     }
 
-    const idPattern = /^d{2}-\d{5}-d$/;
+    const idPattern = /^\d{2}-\d{5}-\d$/;
     if(data.studentId.trim().length === 0) {
         newErrors.studentId = "Student Id is required";
-    }
-    else if(!idPattern.test(data.studentId.trim())){
+    } else if(!idPattern.test(data.studentId.trim())){
         newErrors.studentId = "Format must be NN-NNNNN-N (e.g. 22-12345-1).";
+    }
+
+    const emailPattern = /^\d{2}-\d{5}-\d@student\.aiub\.edu$/;
+    if(data.email.trim().length === 0) {
+        newErrors.email = "Email is required";
+    } else if(!emailPattern.test(data.email.trim())) {
+        newErrors.email = "Format must be a valid email address (e.g. 22-12345-1@student.aiub.edu).)";
     }
 
     if(data.department.trim().length === 0) {
@@ -48,18 +55,20 @@ function validateForm(data: FormData): FormErrors {
 
     if(data.bio.trim().length === 0) {
         newErrors.bio = "Bio is required";
-    }
-    else if(data.bio.trim().length < 10) {
+    } else if(data.bio.trim().length < 10) {
         newErrors.bio = "Bio must be at least 10 characters";
+    } else if(data.bio.length > 200) {
+        newErrors.bio = "Bio cannot exceed 200 characters";
     }
 
     return newErrors;
 }
 
-export default function AddStudentForm({onSubmitSuccess}: AddStudentFormProps) {
+export default function AddStudentForm({onSubmitSuccess, onCancel}: AddStudentFormProps) {
     const [formData, setFormData] = useState<FormData>({
         name: "",
         studentId: "",
+        email: "",
         department: "",
         bio: "",
         skillsText: "",
@@ -74,20 +83,46 @@ export default function AddStudentForm({onSubmitSuccess}: AddStudentFormProps) {
     const markTouched = (field: keyof FormData) => {
         setTouched((prev) => ({...prev, [field]: true}));
     }
+
     const handleSubmitPress = () => {
         setTouched((prev) => ({
             ...prev,
             name: true,
             studentId: true,
+            email: true,
             department: true,
             bio: true,
         }));
         setSubmitAttempted(true);
+
+        if (isFormValid) {
+            setIsSubmitting(true);
+            setSubmitTrigger(true);
+        }
+
     }
 
-    if (isFormValid) {
-        setIsSubmitting(true);
-        setSubmitTrigger(true);
+    const handleCancelPress = () => {
+        const hasUnsavedChanges =
+            formData.name.trim().length > 0 ||
+            formData.studentId.trim().length > 0 ||
+            formData.email.trim().length > 0 ||
+            formData.department.trim().length > 0 ||
+            formData.bio.trim().length > 0 ||
+            formData.skillsText.trim().length > 0 ;
+
+        if(hasUnsavedChanges) {
+            Alert.alert(
+                "Discard Changes",
+                "You have unsaved changes. Are you sure you want to discard changes?",
+                [
+                    {text: "Keep Editing", style: "cancel"},
+                    {text: "Discard", style: "destructive", onPress: onCancel},
+                ]
+            )
+        } else {
+            onCancel();
+        }
     }
 
     const getFieldError = (field: keyof FormErrors) => {
@@ -112,6 +147,7 @@ export default function AddStudentForm({onSubmitSuccess}: AddStudentFormProps) {
                 id: Date.now().toString(),
                 name: formData.name.trim(),
                 studentId: formData.studentId.trim(),
+                email: formData.email.trim(),
                 department: formData.department.trim(),
                 bio: formData.bio.trim(),
                 skills: formData.skillsText
@@ -127,70 +163,113 @@ export default function AddStudentForm({onSubmitSuccess}: AddStudentFormProps) {
         return () => {
             clearTimeout(timeoutId);
         }
-    }, [submitTrigger]);
+    }, [submitTrigger, formData, onSubmitSuccess]);
 
     const isFormValid =
         Object.keys(errors).length === 0 &&
         formData.name.length > 0 &&
-        formData.studentId.length > 0;
+        formData.studentId.length > 0 &&
+        formData.email.length > 0;
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.heading}>Join the Directory</Text>
-            <Text style={styles.subheading}>
-                Fill in your details below to add yourself to StudentDirectory.
-            </Text>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+            <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+                <Text style={styles.heading}>Join the Directory</Text>
+                <Text style={styles.subheading}>
+                    Fill in your details below to add yourself to StudentDirectory.
+                </Text>
 
-            <FormField
-                label={"Full Name"}
-                value={formData.name}
-                onChangeText={(text) => updateField("studentId", text)}
-                onBlur={() => markTouched("name")}
-                placeholder={"e.g. 22-12345-1"}
-                error={errors.studentId}
-            />
+                <FormField
+                    label={"Full Name"}
+                    value={formData.name}
+                    onChangeText={(text) => updateField("name", text)}
+                    onBlur={() => markTouched("name")}
+                    placeholder={"e.g. John Doe"}
+                    // error={errors.name}
+                    error={getFieldError("name")}
+                />
 
-            <FormField
-                label={"Department"}
-                value={formData.department}
-                onChangeText={(text) => updateField("department", text)}
-                onBlur={() => markTouched("department")}
-                placeholder={"e.g. Computer Science"}
-                error={errors.department}
-            />
+                <FormField
+                    label={"Student ID"}
+                    value={formData.studentId}
+                    onChangeText={(text) => updateField("studentId", text)}
+                    onBlur={() => markTouched("studentId")}
+                    placeholder={"e.g. 22-12345-1"}
+                    autoCapitalize={"none"}
+                    error={getFieldError("studentId")}
+                />
 
-            <FormField
-                label={"Bio"}
-                value={formData.bio}
-                onChangeText={(text) => updateField("bio", text)}
-                onBlur={() => markTouched("bio")}
-                placeholder={"A short sentence about yourself..."}
-                multiline
-                error={errors.bio}
-            />
+                <FormField
+                    label={"Email"}
+                    value={formData.email}
+                    onChangeText={(text) => updateField("email", text)}
+                    onBlur={() => markTouched("email")}
+                    placeholder={"e.g. 22-12345-1@student.aiub.edu"}
+                    // error={errors.email}
+                    error={getFieldError("email")}
+                />
 
-            <FormField
-                label="Skills (comma-separated)"
-                value={formData.skillsText}
-                onChangeText={(text) => updateField("skillsText", text)}
-                onBlur={() => markTouched("skillsText")}
-                placeholder={"e.g. React Native, TypeScript, Figma"}
-                autoCapitalize={"none"}
-            />
+                <FormField
+                    label={"Department"}
+                    value={formData.department}
+                    onChangeText={(text) => updateField("department", text)}
+                    onBlur={() => markTouched("department")}
+                    placeholder={"e.g. Computer Science"}
+                    // error={errors.department}
+                    error={getFieldError("department")}
+                />
 
-            {/* Submit Button*/}
-            <Pressable
-                style={[styles.button, !isFormValid && styles.buttonDisabled]}
-                onPress={handleSubmitPress}
-                disabled={!isFormValid || isSubmitting}
-            >
-                {isSubmitting ? (
-                    <ActivityIndicator color="#FFFFFF"/>
-                ): (
-                    <Text style={styles.buttonText}>Join Directory</Text>
-                )}
-            </Pressable>
-        </ScrollView>
+                <FormField
+                    label={"Bio"}
+                    value={formData.bio}
+                    onChangeText={(text) => updateField("bio", text)}
+                    onBlur={() => markTouched("bio")}
+                    placeholder={"A short sentence about yourself..."}
+                    multiline
+                    // error={errors.bio}
+                    error={getFieldError("bio")}
+                />
+                <Text style={[
+                    styles.charCounter,
+                    formData.bio.length > 200 && styles.charCounterError
+                ]}>
+                    {formData.bio.length} / 200 characters
+                </Text>
+
+                <FormField
+                    label="Skills (comma-separated)"
+                    value={formData.skillsText}
+                    onChangeText={(text) => updateField("skillsText", text)}
+                    onBlur={() => markTouched("skillsText")}
+                    placeholder={"e.g. React Native, TypeScript, Figma"}
+                    autoCapitalize={"none"}
+                />
+
+                <View style={styles.buttonRow}>
+                    {/*Cancel Button*/}
+                    <Pressable
+                        style={[styles.button, styles.cancelButton]}
+                        onPress={handleCancelPress}
+                        disabled={isSubmitting}
+                    >
+                        <Text style={[styles.buttonText, styles.cancelButtonText]}>Cancel</Text>
+                    </Pressable>
+
+                    {/* Submit Button*/}
+                    <Pressable
+                        style={[styles.button, styles.submitButton, !isFormValid && styles.buttonDisabled]}
+                        onPress={handleSubmitPress}
+                        disabled={!isFormValid || isSubmitting}
+                    >
+                        {isSubmitting ? (
+                            <ActivityIndicator color="#FFFFFF"/>
+                        ): (
+                            <Text style={styles.buttonText}>Join Directory</Text>
+                        )}
+                    </Pressable>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
@@ -212,13 +291,33 @@ const styles = StyleSheet.create({
         marginBottom: 24,
         lineHeight: 19,
     },
+    charCounter: {
+        fontSize: 12,
+        color: "#64748B",
+        textAlign: "right",
+        marginTop: -12,
+        marginBottom: 16,
+    },
+    charCounterError: {
+        color: "#DC2626",
+    },
+    buttonRow: {
+        flexDirection: "row",
+        gap: 12,
+        marginTop: 8,
+        marginBottom: 32,
+    },
     button: {
-        backgroundColor: "#0D9488",
+        flex: 1,
         borderRadius: 12,
         paddingVertical: 14,
         alignItems: "center",
-        marginTop: 8,
-        marginBottom: 32,
+    },
+    submitButton: {
+        backgroundColor: "#0D9488",
+    },
+    cancelButton: {
+        backgroundColor: "#F1F5F9",
     },
     buttonDisabled: {
         backgroundColor: "#CBD5E1",
@@ -228,5 +327,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: "700",
     },
-
-})
+    cancelButtonText: {
+        color: "#475569",
+    }
+});

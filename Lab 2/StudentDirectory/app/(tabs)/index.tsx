@@ -29,12 +29,15 @@ export default function HomeScreen() {
   }
   
   if(showForm) {
-    return <AddStudentForm onSubmitSuccess={handleNewStudent}/>
+    return <AddStudentForm
+        onSubmitSuccess={handleNewStudent}
+        onCancel={() => setShowForm(false)}
+    />
   }
 
   // Derived value: filter students based on query
   // This is NOT state — it is computed from state every render
-  const filtered = STUDENTS.filter((s) => {
+  const filtered = students.filter((s) => {
     return (
         s.name.toLowerCase().includes(query.toLowerCase()) || // check if name matches query OR
         s.department.toLowerCase().includes(query.toLowerCase()) // check if department matches query

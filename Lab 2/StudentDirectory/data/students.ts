@@ -2,6 +2,7 @@ export interface Student {
     id: string;
     name: string;
     studentId: string;
+    email: string;
     department: string;
     bio: string;
     skills: string[];
@@ -13,6 +14,7 @@ export const STUDENTS: Student[] = [
         id: "1",
         name: "Abdul Quayum",
         studentId: "22-12345-3",
+        email: "",
         department: "Computer Science and Engineering",
         bio: "Undergraduate student majoring in Development with a minor in Artificial Intelligence. Passionate about building robust web applications and exploring machine learning.",
         skills: ["C++", "Java", "SQL", "C#", ".NET", "ASP.NET Core", "MVC Architecture", "Node.js", "React", "React Native", "Python"],
@@ -22,6 +24,7 @@ export const STUDENTS: Student[] = [
         id: "2",
         name: "John Doe",
         studentId: "23-12346-1",
+        email: "",
         department: "Computer Science",
         bio: "Passionate about mobile development and building tools that make everyday life easier.",
         skills: ["React Native", "TypeScript", "Node.js"],
@@ -31,6 +34,7 @@ export const STUDENTS: Student[] = [
         id: "3",
         name: "Emily Chen",
         studentId: "21-54321-2",
+        email: "",
         department: "Software Engineering",
         bio: "Frontend enthusiast with a keen eye for accessible UI design and interactive web animations.",
         skills: ["HTML5", "CSS3", "JavaScript", "Vue.js", "Tailwind CSS", "Figma"],
@@ -40,6 +44,7 @@ export const STUDENTS: Student[] = [
         id: "4",
         name: "Michael Chang",
         studentId: "22-98765-1",
+        email: "",
         department: "Computer Science",
         bio: "Cloud architecture geek focused on scalable infrastructure, CI/CD pipelines, and containerization.",
         skills: ["Docker", "Kubernetes", "AWS", "Terraform", "Go", "Linux"],
@@ -49,6 +54,7 @@ export const STUDENTS: Student[] = [
         id: "5",
         name: "Sarah Jenkins",
         studentId: "23-45678-3",
+        email: "",
         department: "Data Science",
         bio: "Data-driven problem solver exploring deep learning models and predictive analytics.",
         skills: ["Python", "TensorFlow", "Pandas", "NumPy", "Jupyter", "SQL"],
@@ -58,6 +64,7 @@ export const STUDENTS: Student[] = [
         id: "6",
         name: "David Miller",
         studentId: "20-11223-2",
+        email: "",
         department: "Information Technology",
         bio: "Backend specialist dedicated to building secure RESTful APIs and optimizing database queries.",
         skills: ["PHP", "Laravel", "MySQL", "Redis", "PostgreSQL", "GraphQL"],
@@ -67,6 +74,7 @@ export const STUDENTS: Student[] = [
         id: "7",
         name: "Jessica Wong",
         studentId: "22-33445-1",
+        email: "",
         department: "Computer Engineering",
         bio: "Hardware-meets-software developer tinkering with IoT devices and embedded systems.",
         skills: ["C", "C++", "Arduino", "Raspberry Pi", "Assembly", "Python"],
@@ -76,6 +84,7 @@ export const STUDENTS: Student[] = [
         id: "8",
         name: "Marcus Johnson",
         studentId: "21-55667-3",
+        email: "",
         department: "Cybersecurity",
         bio: "Ethical hacker and security researcher finding vulnerabilities before the bad guys do.",
         skills: ["Kali Linux", "Wireshark", "Metasploit", "Python", "Bash", "Penetration Testing"],
@@ -85,6 +94,7 @@ export const STUDENTS: Student[] = [
         id: "9",
         name: "Olivia Davis",
         studentId: "23-77889-2",
+        email: "",
         department: "Software Engineering",
         bio: "Web3 advocate building decentralized applications and writing secure smart contracts.",
         skills: ["Solidity", "Ethereum", "Web3.js", "React", "Rust", "TypeScript"],
@@ -94,6 +104,7 @@ export const STUDENTS: Student[] = [
         id: "10",
         name: "Daniel Kim",
         studentId: "22-99001-1",
+        email: "",
         department: "Computer Science",
         bio: "Indie game developer creating immersive 3D worlds and optimizing rendering pipelines.",
         skills: ["C#", "Unity3D", "Unreal Engine", "C++", "Blender", "HLSL"],
