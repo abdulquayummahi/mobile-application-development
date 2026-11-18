@@ -1,10 +1,10 @@
 // app/(tabs)/(home)/[id].tsx
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { ARTICLES } from "../../../data/articles";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ARTICLES } from "../../../data/articles";
 
 type ArticleParams = { id: string };
 
@@ -27,9 +27,17 @@ export default function ArticleDetail() {
 
     useEffect(() => {
         if (article) {
-            navigation.setOptions({ title: article.title });
+            navigation.setOptions({
+                title: article.title,
+                // Exercise 2: bookmark toggle in the header
+                headerRight: () => (
+                    <Pressable onPress={() => setBookmarked((prev) => !prev)} hitSlop={8}>
+                        <Ionicons name={bookmarked ? "bookmark" : "bookmark-outline"} size={22} color="#FFFFFF" />
+                    </Pressable>
+                ),
+            });
         }
-    }, [article, navigation]);
+    }, [article, navigation, bookmarked]);
 
     if (!article) {
         return (
@@ -59,25 +67,13 @@ export default function ArticleDetail() {
                     </Text>
                 ))}
             </ScrollView>
-
-            <TouchableOpacity
-                style={styles.fab}
-                onPress={() => setBookmarked(prev => !prev)}
-                activeOpacity={0.8}
-            >
-                <Ionicons
-                    name={bookmarked ? 'bookmark' : 'bookmark-outline'}
-                    size={24}
-                    color="#FFFFFF"
-                />
-            </TouchableOpacity>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     screen: { flex: 1, backgroundColor: "#FFFFFF" },
-    content: { padding: 20, paddingBottom: 80 }, // Added extra padding so text isn't hidden behind the FAB
+    content: { padding: 20, paddingBottom: 48 },
     badge: { alignSelf: "flex-start", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, marginBottom: 14 },
     badgeText: { fontSize: 12, fontWeight: "600" },
     title: { fontSize: 22, fontWeight: "800", color: "#0D1F4E", lineHeight: 30, marginBottom: 12 },
@@ -87,21 +83,4 @@ const styles = StyleSheet.create({
     divider: { height: 1, backgroundColor: "#F1F5F9", marginBottom: 20 },
     body: { fontSize: 15, color: "#334155", lineHeight: 24, marginBottom: 16 },
     notFound: { padding: 40, textAlign: "center", color: "#94A3B8" },
-
-    fab: {
-        position: "absolute",
-        bottom: 24,
-        right: 24,
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: "#0D1F4E",
-        justifyContent: "center",
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
-    }
 });

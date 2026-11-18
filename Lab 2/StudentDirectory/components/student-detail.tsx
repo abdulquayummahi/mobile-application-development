@@ -11,20 +11,20 @@ export default function StudentDetail({student}: StudentDetailProps) {
         <View style={styles.card}>
             <Text style={styles.name}>{student.name}</Text>
             <Text style={styles.department}>{student.department}</Text>
-            <Text style={styles.idBadge}>{student.studentId}</Text>
+            <Text style={styles.idBadge}>ID: {student.studentId}</Text>
 
-            <View style={styles.divider}>
-                <Text style={styles.sectionLabel}>About</Text>
-                <Text style={styles.bio}>{student.bio}</Text>
+            <View style={styles.divider} />
 
-                <Text style={styles.sectionLabel}>Skills</Text>
-                <View style={styles.skillsRow}>
-                    {student.skills.map((skill, index) => (
-                        <View key={index} style={styles.skillBadge}>
-                            <Text style={styles.skillText}>{skill}</Text>
-                        </View>
-                    ))}
-                </View>
+            <Text style={styles.sectionLabel}>About</Text>
+            <Text style={styles.bio}>{student.bio}</Text>
+
+            <Text style={styles.sectionLabel}>Skills</Text>
+            <View style={styles.skillsRow}>
+                {student.skills.map((skill, index) => (
+                    <View key={index} style={styles.skillBadge}>
+                        <Text style={styles.skillText}>{skill}</Text>
+                    </View>
+                ))}
             </View>
         </View>
     );

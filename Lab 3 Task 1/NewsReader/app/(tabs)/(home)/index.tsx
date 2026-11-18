@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#E2E8F0",
     },
     activePill: {
-        backgroundColor: "#0D1F4E",
+        backgroundColor: "#0D9488",
     },
     pillText: {
         fontSize: 14,

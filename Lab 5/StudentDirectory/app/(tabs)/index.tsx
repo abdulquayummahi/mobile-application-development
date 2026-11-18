@@ -21,6 +21,9 @@ export default function Index() {
   const [query, setQuery] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
+  // If the selected student was removed, this becomes null and the detail panel closes
+  const selected = students.find((s) => s.id === selectedStudent?.id) ?? null;
+
   const filtered = students.filter(
     (s) =>
       s.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -79,7 +82,7 @@ export default function Index() {
           <StudentItem
             student={item}
             onPress={handleSelect}
-            isSelected={selectedStudent?.id === item.id}
+            isSelected={selected?.id === item.id}
           />
         )}
         ListEmptyComponent={
@@ -89,7 +92,7 @@ export default function Index() {
         }
       />
 
-      {selectedStudent && <StudentDetail student={selectedStudent} />}
+      {selected && <StudentDetail student={selected} />}
     </SafeAreaView>
   );
 }

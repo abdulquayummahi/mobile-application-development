@@ -1,4 +1,4 @@
-import {FlatList, Pressable, StyleSheet, Text, View} from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import StudentItem from "../../components/student-item";
 import { Student, STUDENTS } from "../../data/students";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,7 +6,6 @@ import SearchBar from "../../components/search-bar";
 import { useState } from "react";
 // NEW: import the StudentDetail component to show student details when selected
 import StudentDetail from "../../components/student-detail";
-import AddStudentForm from "../../components/add-student-form";
 
 export default function HomeScreen() {
   // State 1: the current search query
@@ -15,29 +14,14 @@ export default function HomeScreen() {
   // NEW: State 2: the currently selected student (null = none selected)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
-  const [students, setStudents] = useState<Student[]>(STUDENTS);
-  const [showForm, setShowForm] = useState(false);
-
   // NEW: Toggle selection: tap same student to select and deselect
   const handleSelect = (student: Student) => {
     setSelectedStudent((prev) => (prev?.id === student.id ? null : student));
   };
 
-  const handleNewStudent = (newStudent: Student) => {
-    setStudents((prev) => [newStudent, ...prev]);
-    setShowForm(false);
-  }
-  
-  if(showForm) {
-    return <AddStudentForm
-        onSubmitSuccess={handleNewStudent}
-        onCancel={() => setShowForm(false)}
-    />
-  }
-
   // Derived value: filter students based on query
   // This is NOT state — it is computed from state every render
-  const filtered = students.filter((s) => {
+  const filtered = STUDENTS.filter((s) => {
     return (
         s.name.toLowerCase().includes(query.toLowerCase()) || // check if name matches query OR
         s.department.toLowerCase().includes(query.toLowerCase()) // check if department matches query
@@ -49,9 +33,6 @@ export default function HomeScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.titleBar}>
           <Text style={styles.title}>Student Directory</Text>
-          <Pressable onPress={() => setShowForm(true)}>
-            <Text style={{color: '#FFFFFF', fontWeight:'700'}}>+Add</Text>
-          </Pressable>
         </View>
 
         <SearchBar value={query} onChangeText={setQuery} />
@@ -80,23 +61,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F0F4F8",
   },
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-  // NEW: styles for the title bar
   titleBar: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -109,10 +73,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#FFFFFF",
-  },
-  count: {
-    fontSize: 12,
-    color: "#CCFBF1",
   },
   empty: {
     padding: 40,
